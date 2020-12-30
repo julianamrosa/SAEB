@@ -1,0 +1,205 @@
+---
+title: "Saeb 4"
+author: "Juliana Magalhães Rosa"
+date: "11/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Importando arquivo de dados
+setwd("~/Me2/atividade_5")
+saeb <- read.csv("saeb.csv", encoding="UTF-8")
+```
+
+```{r}
+#Carregando bibliotecas
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+library(BSDA)
+```
+
+```{r}
+#Colhendo amostra de tamanho 30
+set.seed(2025)
+amostra_30 = saeb[sample(2000, 30), ]
+```
+
+```{r}
+#Colhendo amostra de tamanho 100
+set.seed(5254)
+amostra_100 = saeb[sample(2000, 100), ]
+```
+
+```{r}
+#Filtrando LOCALIZACAO
+rural_30 <- amostra_30%>%
+  filter(LOCALIZACAO=="Rural")
+urbana_30 <- amostra_30%>%
+  filter(LOCALIZACAO=="Urbana")
+rural_100 <- amostra_100%>%
+  filter(LOCALIZACAO=="Rural")
+urbana_100 <- amostra_100%>%
+  filter(LOCALIZACAO=="Urbana")
+```
+
+```{r}
+#Gráfico LOCALIZACAO x NOTA_MT para a amostra de tamanho 30
+ggplot(amostra_30)+
+  geom_boxplot(aes(LOCALIZACAO, NOTA_MT), fill="lightgray", show.legend=FALSE)+
+  theme_minimal()+
+  ggtitle("Notas em Matemática para Escolas nas Regiões Urbanas e Rurais",
+          subtitle="Amostra de Tamanho 30")+
+  xlab("Localização da Escola")+
+  ylab("Notas em Matemática")
+```
+
+```{r}
+#Medidas LOCALIZACAO x NOTA_MT para a amostra de tamanho 30
+amostra_30%>%
+  group_by(LOCALIZACAO)%>%
+  summarize(media=mean(NOTA_MT), q1=quantile(NOTA_MT, 0.25),
+            mediana=median(NOTA_MT), q3=quantile(NOTA_MT, 0.75), q4=max(NOTA_MT),
+            amplitude=max(NOTA_MT)-min(NOTA_MT), iiq=IQR(NOTA_MT), variancia=var(NOTA_MT),
+            dp=sd(NOTA_MT), cv=sd(NOTA_MT)/mean(NOTA_MT))
+```
+
+```{r}
+#Testes para NOTA_MT por LOCALIZACAO para a amostra de tamanho 30
+var.test(rural_30$NOTA_MT, urbana_30$NOTA_MT, conf.level=0.95)
+t.test(rural_30$NOTA_MT, urbana_30$NOTA_MT, alternative="less", var.equal=TRUE, conf.level=0.95)
+wilcox.test(rural_30$NOTA_MT, urbana_30$NOTA_MT, alternative="less")
+ks.test(rural_30$NOTA_MT, urbana_30$NOTA_MT, alternative="greater")
+```
+
+```{r}
+#Gráfico LOCALIZACAO x NOTA_MT para a amostra de tamanho 100
+ggplot(amostra_100)+
+  geom_boxplot(aes(LOCALIZACAO, NOTA_MT), fill="lightgray", outlier.shape=8, show.legend=FALSE)+
+  theme_minimal()+
+  ggtitle("Notas em Matemática para Escolas nas Regiões Urbanas e Rurais",
+          subtitle="Amostra de Tamanho 100")+
+  xlab("Localização da Escola")+
+  ylab("Notas em Matemática")
+```
+
+```{r}
+#Medidas LOCALIZACAO x NOTA_MT para a amostra de tamanho 100
+amostra_100%>%
+  group_by(LOCALIZACAO)%>%
+  summarize(media=mean(NOTA_MT), q1=quantile(NOTA_MT, 0.25),
+            mediana=median(NOTA_MT), q3=quantile(NOTA_MT, 0.75), q4=max(NOTA_MT),
+            amplitude=max(NOTA_MT)-min(NOTA_MT), iiq=IQR(NOTA_MT), variancia=var(NOTA_MT),
+            dp=sd(NOTA_MT), cv=sd(NOTA_MT)/mean(NOTA_MT))
+```
+
+```{r}
+#Testes para NOTA_MT por LOCALIZACAO para a amostra de tamanho 100
+var.test(rural_100$NOTA_MT, urbana_100$NOTA_MT, conf.level=0.95)
+t.test(rural_100$NOTA_MT, urbana_100$NOTA_MT, alternative="less", var.equal=TRUE, conf.level=0.95)
+wilcox.test(rural_100$NOTA_MT, urbana_100$NOTA_MT, alternative="less")
+ks.test(rural_100$NOTA_MT, urbana_100$NOTA_MT, alternative="greater")
+```
+
+```{r}
+#Filtrando DEPENDENCIA_ADM
+estadual_30 <- amostra_30%>%
+  filter(DEPENDENCIA_ADM=="Estadual")
+municipal_30 <- amostra_30%>%
+  filter(DEPENDENCIA_ADM=="Municipal")
+estadual_100 <- amostra_100%>%
+  filter(DEPENDENCIA_ADM=="Estadual")
+municipal_100 <- amostra_100%>%
+  filter(DEPENDENCIA_ADM=="Municipal")
+```
+
+```{r}
+#Gráfico DEPENDENCIA_ADM x NOTA_LP para a amostra de tamanho 30
+ggplot(amostra_30)+
+  geom_boxplot(aes(DEPENDENCIA_ADM, NOTA_LP), fill="darkgray", show.legend=FALSE)+
+  theme_minimal()+
+  ggtitle("Notas em Português para Escolas Municipais e Estaduais",
+          subtitle="Amostra de Tamanho 30")+
+  xlab("Dependência Administrativa da Escola")+
+  ylab("Notas em Português")
+```
+
+```{r}
+#Medidas DEPENDENCIA_ADM x NOTA_LP para a amostra de tamanho 30
+amostra_30%>%
+  group_by(DEPENDENCIA_ADM)%>%
+  summarize(media=mean(NOTA_LP), q1=quantile(NOTA_LP, 0.25),
+            mediana=median(NOTA_LP), q3=quantile(NOTA_LP, 0.75), q4=max(NOTA_LP),
+            amplitude=max(NOTA_LP)-min(NOTA_LP), iiq=IQR(NOTA_LP), variancia=var(NOTA_LP),
+            dp=sd(NOTA_LP), cv=sd(NOTA_LP)/mean(NOTA_LP))
+```
+
+```{r}
+#Testes para NOTA_LP por DEPENDENCIA_ADM para a amostra de tamanho 30
+var.test(estadual_30$NOTA_LP, municipal_30$NOTA_LP, conf.level=0.95)
+t.test(estadual_30$NOTA_LP, municipal_30$NOTA_LP, var.equal=TRUE, conf.level=0.95)
+wilcox.test(estadual_30$NOTA_LP, municipal_30$NOTA_LP)
+ks.test(estadual_30$NOTA_LP, municipal_30$NOTA_LP, alternative="greater")
+```
+
+```{r}
+#Gráfico DEPENDENCIA_ADM x NOTA_LP para a amostra de tamanho 100
+ggplot(amostra_100)+
+  geom_boxplot(aes(DEPENDENCIA_ADM, NOTA_LP), fill="darkgray", show.legend=FALSE)+
+  theme_minimal()+
+  ggtitle("Notas em Português para Escolas Municipais e Estaduais",
+          subtitle="Amostra de Tamanho 100")+
+  xlab("Dependência Administrativa da Escola")+
+  ylab("Notas em Português")
+```
+
+```{r}
+#Medidas DEPENDENCIA_ADM x NOTA_LP para a amostra de tamanho 100
+amostra_100%>%
+  group_by(DEPENDENCIA_ADM)%>%
+  summarize(media=mean(NOTA_LP), q1=quantile(NOTA_LP, 0.25),
+            mediana=median(NOTA_LP), q3=quantile(NOTA_LP, 0.75), q4=max(NOTA_LP),
+            amplitude=max(NOTA_LP)-min(NOTA_LP), iiq=IQR(NOTA_LP), variancia=var(NOTA_LP),
+            dp=sd(NOTA_LP), cv=sd(NOTA_LP)/mean(NOTA_LP))
+```
+
+```{r}
+#Testes para NOTA_LP por DEPENDENCIA_ADM para a amostra de tamanho 100
+var.test(estadual_100$NOTA_LP, municipal_100$NOTA_LP, conf.level=0.95)
+t.test(estadual_100$NOTA_LP, municipal_100$NOTA_LP, var.equal=TRUE, conf.level=0.95)
+wilcox.test(estadual_100$NOTA_LP, municipal_100$NOTA_LP)
+ks.test(estadual_100$NOTA_LP, municipal_100$NOTA_LP, alternative="greater")
+```
+
+```{r}
+#Gráfico NOTA LP X NOTA_MT para a amostra de tamanho 30
+p1 <- ggplot(amostra_30)+
+  geom_boxplot(aes(NOTA_LP), fill="aquamarine4")+
+  coord_flip()+
+  theme_minimal()+
+  ggtitle("Notas em Português")+
+  xlab("")+
+  xlim(125, 350)+
+  theme(axis.ticks.x=element_blank(), axis.text.x=element_blank())
+p2 <- ggplot(amostra_30)+
+  geom_boxplot(aes(NOTA_MT), fill="aquamarine3")+
+  coord_flip()+
+  theme_minimal()+
+  ggtitle("Notas em Matemática")+
+  xlab("")+
+  xlim(125, 350)+
+  theme(axis.ticks.x=element_blank(), axis.text.x=element_blank())
+grid.arrange(p1, p2, nrow = 1)
+```
+
+```{r}
+#Testes NOTA LP X NOTA_MT para a amostra de tamanho 30
+#Testes NOTA LP X NOTA_MT para a amostra de tamanho 30
+t.test(amostra_30$NOTA_LP, amostra_30$NOTA_MT, conf.level=0.95, paired=TRUE)
+SIGN.test(amostra_30$NOTA_LP, amostra_30$NOTA_MT)
+wilcox.test(amostra_30$NOTA_LP, amostra_30$NOTA_MT, paired=TRUE)
+```

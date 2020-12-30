@@ -1,0 +1,425 @@
+---
+title: "Saeb"
+author: "Juliana Magalhães Rosa"
+date: "9/13/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Importando o arquivo de dados
+setwd("~/Me2/atividade_1")
+saeb <- read.csv("saeb.csv", encoding="UTF-8")
+```
+
+```{r}
+#Carregando as bibliotecas
+library(questionr)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+#Ajustando tipo das variáveis
+saeb$ANO <- as.character(saeb$ANO)
+saeb$MUNICIPIO <- as.character(saeb$MUNICIPIO)
+```
+
+
+```{r}
+#Tabela REGIAO
+freq(saeb$REGIAO, digits=2, valid=FALSE, total=TRUE)
+#Gráfico REGIAO
+ggplot(saeb)+
+  geom_bar(aes(REGIAO), fill="darkolivegreen")+
+  theme_light()+
+  ggtitle("Região de Localização da Escola")+
+  xlab("Região")+
+  ylab("Frequência")
+```
+
+```{r}
+#Tabela UF
+freq(saeb$UF, digits=2, valid=FALSE, total=TRUE)
+#Gráfico UF
+ggplot(saeb)+
+  geom_bar(aes(UF), fill="yellow", color="chartreuse3")+
+  theme_light()+
+  ggtitle("Unidade da Federação de Localização da Escola")+
+  xlab("Unidade da Federação")+
+  ylab("Frequência")
+```
+
+```{r}
+#Selecionando municípios com mais de 5 estudantes
+saeb_mun <- saeb%>%
+  filter(MUNICIPIO %in% c("1100205", "1302603", "1501402", "1504208", "2111300", "2211001", "2304400", "2307304", "2307650", "2507507", "2607901", "2610707", "2611606", "2927408", "3106200", "3118601", "3129806", "3136702", "3154606", "3170206", "3300456", "3301702", "3304557", "3306305", "3516200", "3518800", "3525003", "3529401", "3530607", "3548708", "3549904", "3550308", "3552205", "3552403", "4106902", "4115200", "4205407", "4209102", "5002704", "5201405", "5208707", "5300108"))
+#Adicionando os nomes dos municípios
+saeb_mun <- saeb_mun%>%
+  arrange(MUNICIPIO)
+MUNICIPIO_NOMES <- rep("Porto Velho", 8)
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Manaus", 33))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Belém", 16))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Marabá", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("São Luís", 8))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Teresina", 10))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Fortaleza", 12))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Juazeiro do Norte", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Maracanaú", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("João Pessoa", 8))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Jaboatão dos Guararapes", 9))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Paulista", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Recife", 14))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Salvador", 23))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Belo Horizonte", 19))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Contagem", 10))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Ibirité", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Juiz de Fora", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Ribeirão das Neves", 8))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Uberlândia", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Belford Roxo", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Duque de Caxias", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Rio de Janeiro", 44))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Volta Redonda", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Franca", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Guarulhos", 15))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Jandira", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Mauá", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Mogi das Cruzes", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("São Bernardo do Campo", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("São José dos Campos", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("São Paulo", 56))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Sorocaba", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Sumaré", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Curitiba", 15))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Maringá", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Florianópolis", 6))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Joinville", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Campo Grande", 9))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Aparecida de Goiânia", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Goiânia", 7))
+MUNICIPIO_NOMES <- append(MUNICIPIO_NOMES, rep("Brasília", 31))
+saeb_mun$MUNICIPIO_NOMES <- MUNICIPIO_NOMES
+#Tabela MUNICIPIO
+table(saeb_mun$MUNICIPIO_NOMES)
+#Gráfico MUNICIPIO
+ggplot(saeb_mun)+
+  geom_bar(aes(MUNICIPIO_NOMES), fill="darkolivegreen2")+
+  coord_flip()+
+  theme_light()+
+  ggtitle("Município de Localização da Escola")+
+  xlab("Município")+
+  ylab("Frequência")
+```
+
+```{r}
+#Tabela AREA
+freq(saeb$AREA, digits=2, valid=FALSE, total=TRUE)
+#Gráfico AREA
+ggplot(saeb)+
+  geom_bar(aes(AREA), fill="bisque3", color="bisque4")+
+  coord_polar()+
+  theme_light()+
+  theme(axis.ticks.y=element_blank(), axis.text.y=element_blank())+
+  ggtitle("Área de Localização da Escola")+
+  xlab("Área")+
+  ylab("")
+```
+
+```{r}
+#Tabela DEPENDENCIA_ADM
+freq(saeb$DEPENDENCIA_ADM, digits=2, valid=FALSE, total=TRUE)
+#Gráfico DEPENDENCIA_ADM
+ggplot(saeb)+
+  geom_bar(aes(DEPENDENCIA_ADM), fill="darkgoldenrod3")+
+  theme_light()+
+  ggtitle("Categoria Administrativa da Escola")+
+  xlab("Dependência Administrativa")+
+  ylab("Frequência")
+```
+
+```{r}
+#Tabela LOCALIZACAO
+freq(saeb$LOCALIZACAO, digits=2, valid=FALSE, total=TRUE)
+#Gráfico LOCALIZACAO
+ggplot(saeb)+
+  geom_bar(aes(LOCALIZACAO), fill="darkseagreen", color="darkseagreen4")+
+  coord_polar()+
+  theme_light()+
+  theme(axis.ticks.y=element_blank(), axis.text.y=element_blank())+
+  ggtitle("Localização da Escola")+
+  xlab("Localização")+
+  ylab("")
+```
+
+```{r}
+#Tabela SEXO
+freq(saeb$SEXO, digits=2, valid=FALSE, total=TRUE)
+#Gráfico SEXO
+saeb%>%
+  filter(!is.na(SEXO))%>%
+  ggplot()+
+  geom_bar(aes(SEXO), fill="darkorchid4")+
+  theme_light()+
+  ggtitle("Sexo do Estudante")+
+  xlab("Sexo")+
+  ylab("Frequência")
+```
+
+```{r}
+#Tabela RACA_COR
+freq(saeb$RACA_COR, digits=2, valid=FALSE, total=TRUE)
+#Gráfico RACA_COR
+saeb%>%
+  filter(!is.na(RACA_COR))%>%
+  ggplot()+
+  geom_bar(aes(RACA_COR), fill="darkslategray")+
+  theme_light()+
+  ggtitle("Raça/ Cor do Estudante")+
+  xlab("Raça/ Cor")+
+  ylab("Frequência")
+```
+
+```{r}
+#Ordenando categorias MES_NASC
+saeb$MES_NASC <- factor(saeb$MES_NASC, 
+                        levels=c("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", 
+                                 "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"), ordered=TRUE)
+#Tabela MES_NASC
+freq(saeb$MES_NASC, digits=2, valid=FALSE, total=TRUE)
+#Gráfico MES_NASC
+saeb%>%
+  filter(!is.na(MES_NASC))%>%
+  ggplot()+
+  geom_bar(aes(MES_NASC), fill="brown3")+
+  theme_light()+
+  ggtitle("Mês de Nascimento do Estudante")+
+  xlab("Mês")+
+  ylab("Frequência")
+```
+
+```{r}
+#Tabela ANO_NASC
+freq(saeb$ANO_NASC, digits=2, valid=FALSE, total=TRUE, cum=TRUE)
+#Gráfico ANO_NASC
+saeb%>%
+  filter(!is.na(ANO_NASC))%>%
+  ggplot()+
+  geom_bar(aes(ANO_NASC), fill="coral")+
+  theme_light()+
+  ggtitle("Ano de Nascimento do Estudante")+
+  xlab("Ano")+
+  ylab("Frequência")
+```
+
+```{r}
+#Ordenando categorias COMPUTADOR
+saeb$COMPUTADOR <- factor(saeb$COMPUTADOR, levels=c("Não tem", "Sim, um", "Sim, dois", "Sim, três",
+                                                "Sim, quatro ou mais"), ordered=TRUE)
+#Tabela COMPUTADOR
+freq(saeb$COMPUTADOR, digits=2, valid=FALSE, total=TRUE, cum=TRUE, sort="dec")
+#Gráfico COMPUTADOR
+saeb%>%
+  filter(!is.na(COMPUTADOR))%>%
+  ggplot()+
+  geom_bar(aes(COMPUTADOR), fill="cornsilk4")+
+  theme_light()+
+  ggtitle("Posse de Computador em Casa")+
+  xlab("Computador")+
+  ylab("Frequência")
+```
+
+```{r}
+#Ordenando categorias ESC_MAE
+saeb$ESC_MAE <- factor(saeb$ESC_MAE,
+                       levels=c("Nunca estudou", 
+                                "Não completou a 4.ª série/5.º ano do Ensino Fundamental",
+                                "Completou a 4.ª série/5.º ano, mas não completou a 8.ª série/9.º ano do Ensino Fundamental",
+                                "Completou a 8.ª série/9.º ano do Ensino Fundamental, mas não completou o Ensino Médio", 
+                                "Completou o Ensino Médio, mas não completou a Faculdade", "Completou a Faculdade", "Não sei"), ordered=TRUE)
+#Tabela ESC_MAE
+freq(saeb$ESC_MAE, digits=2, valid=FALSE, total=TRUE)
+#Gráfico ESC_MAE
+saeb%>%
+  filter(!is.na(ESC_MAE))%>%
+  ggplot()+
+  geom_bar(aes(ESC_MAE), fill="deeppink3")+
+  coord_flip()+
+  theme_light()+
+  ggtitle("Escolaridade da Mãe
+          do Estudante")+
+  xlab("Escolaridade da Mãe")+
+  ylab("Frequência")
+```
+
+```{r}
+#Ordenando categorias ESC_PAI
+saeb$ESC_PAI <- factor(saeb$ESC_PAI,
+                       levels=c("Nunca estudou", 
+                                "Não completou a 4.ª série/5.º ano do Ensino Fundametal",
+                                "Completou a 4.ª série/5.º ano, mas não completou a 8.ª série/9.º ano do Ensino Fundamental",
+                                "Completou a 8.ª série/9.º ano do Ensino Fundamental, mas não completou o Ensino Médio", 
+                                "Completou o Ensino Médio, mas não completou a Faculdade", "Completou a Faculdade", "Não sei"), ordered=TRUE)
+#Tabela ESC_PAI
+freq(saeb$ESC_PAI, digits=2, valid=FALSE, total=TRUE)
+#Gráfico ESC_PAI
+saeb%>%
+  filter(!is.na(ESC_PAI))%>%
+  ggplot()+
+  geom_bar(aes(ESC_PAI), fill="cornflowerblue")+
+  coord_flip()+
+  theme_light()+
+  ggtitle("Escolaridade do Pai 
+          do Estudante")+
+  xlab("Escolaridade do Pai")+
+  ylab("Frequência")
+```
+
+```{r}
+#Ordenando categorias USO_TEMPO_TELAS
+saeb$USO_TEMPO_TELAS <- factor(saeb$USO_TEMPO_TELAS, levels=c("Não vejo TV, não navego na internet e não jogo jogos eletrônicos",
+                                                              "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas, até 3 horas",
+                                                              "Mais de 3 horas"), ordered=TRUE)
+#Tabela USO_TEMPO_TELAS
+freq(saeb$USO_TEMPO_TELAS, digits=2, valid=FALSE, total=TRUE)
+#Gráfico USO_TEMPO_TELAS
+saeb%>%
+  filter(!is.na(USO_TEMPO_TELAS))%>%
+  ggplot()+
+  geom_bar(aes(USO_TEMPO_TELAS), fill="chocolate")+
+  coord_flip()+
+  theme_light()+
+  ggtitle("Tempo Gasto em Frente a Telas
+          em Dias de Aula")+
+  xlab("Tempo em Frente a Telas")+
+  ylab("Frequência")
+```
+
+```{r}
+#Ordenando categorias AFAZERES_DOM
+saeb$AFAZERES_DOM<- factor(saeb$AFAZERES_DOM, levels=c("Não faço trabalhos domésticos",
+                                                       "Menos de 1 hora",
+                                                       "Entre 1 e 2 horas",
+                                                       "Mais de 2 horas, até 3 horas",
+                                                       "Mais de 3 horas"), ordered=TRUE)
+#Tabela AFAZERES_DOM
+freq(saeb$AFAZERES_DOM, digits=2, valid=FALSE, total=TRUE)
+#Gráfico AFAZERES_DOM
+saeb%>%
+  filter(!is.na(AFAZERES_DOM))%>%
+  ggplot()+
+  geom_bar(aes(AFAZERES_DOM), fill="deeppink4")+
+  coord_flip()+
+  theme_light()+
+  ggtitle("Tempo Gasto Realizando Afazeres Domésticos")+
+  xlab("Afazeres Domésticos")+
+  ylab("Frequência")
+```
+
+```{r}
+#Tabela TRABALHO
+freq(saeb$TRABALHO, digits=2, valid=FALSE, total=TRUE)
+#Gráfico TRABALHO
+saeb%>%
+  filter(!is.na(TRABALHO))%>%
+  ggplot()+
+  geom_bar(aes(TRABALHO), fill="darkkhaki", color="darkgoldenrod")+
+  coord_polar()+
+  theme_light()+
+  theme(axis.ticks.y=element_blank(), axis.text.y=element_blank())+
+  ggtitle("Estudantes que Trabalham ou Não")+
+  xlab("Trabalho")+
+  ylab("")
+```
+
+```{r}
+#Tabela PERSPECTIVAS
+freq(saeb$PERSPECTIVAS, digits=2, valid=FALSE, total=TRUE, sort="inc")
+#Gráfico PERSPECTIVAS
+saeb%>%
+  filter(!is.na(PERSPECTIVAS))%>%
+  ggplot()+
+  geom_bar(aes(PERSPECTIVAS), fill="darkblue")+
+  coord_flip()+
+  theme_light()+
+  ggtitle("Perspectivas para Depois de Terminar o Nono Ano")+
+  xlab("Perspectivas")+
+  ylab("Frequência")
+```
+
+```{r}
+#Ramo e folhas NOTA_LP
+stem(saeb$NOTA_LP)
+#Separando NOTA_LP em intervalos de classes
+k1=1+3.3*log10(2000)
+k1
+h1=(max(saeb$NOTA_LP)-min(saeb$NOTA_LP))/k1
+h1
+saeb$notalp.cut = cut(saeb$NOTA_LP, breaks=c(129, 150, 171, 192, 213, 234, 255, 276, 297, 318, 339,
+                                             360, 381))
+#Tabela NOTA_LP
+with(saeb, table(notalp.cut))
+#Histograma NOTA_LP
+ggplot(saeb, aes(NOTA_LP))+
+  geom_histogram(binwidth=21, fill="black")+
+  theme_light()+
+  ggtitle("Histograma de Proficiência em Língua Portuguesa na Escala Saeb")+
+  xlab("Nota em Língua Portuguesa")+
+  ylab("Frequência")
+#Medidas descritivas NOTA_LP
+saeb%>%
+  summarize(media=mean(NOTA_LP), q1=quantile(NOTA_LP, 0.25),
+            mediana=median(NOTA_LP), q3=quantile(NOTA_LP, 0.75), q4=max(NOTA_LP),
+            amplitude=max(NOTA_LP)-min(NOTA_LP), iiq=IQR(NOTA_LP), variancia=var(NOTA_LP),
+            dp=sd(NOTA_LP), cv=sd(NOTA_LP)/mean(NOTA_LP), Ap=3*(media-mediana)/dp,
+            Aq=((q3-mediana)-(mediana-q1))/iiq,
+            k=(q3-q1)/(2*(quantile(NOTA_LP, 0.9)-quantile(NOTA_LP, 0.1))))
+#Boxplot NOTA_LP
+ggplot(saeb, aes(NOTA_LP))+
+  geom_boxplot()+
+  coord_flip()+
+  theme_light()+
+  theme(axis.ticks.x=element_blank(), axis.text.x=element_blank())+
+  ggtitle("Box Plot de Proficiência em Língua Portuguesa na Escala Saeb")+
+  xlab("Nota em Língua Portuguêsa")
+```
+
+```{r}
+#Ramo e folhas NOTA_MT
+stem(saeb$NOTA_MT)
+#Separando NOTA_MT em intervalos de classes
+k1
+h2=(max(saeb$NOTA_MT)-min(saeb$NOTA_MT))/k1
+h2
+saeb$notamt.cut = cut(saeb$NOTA_MT, 
+                      breaks=c(127, 151, 175, 199, 223, 247, 271, 295, 319, 343, 367, 391, 415))
+#Tabela NOTA_MT
+with(saeb, table(notamt.cut))
+#Histograma NOTA_MT
+ggplot(saeb, aes(NOTA_MT))+
+  geom_histogram(binwidth=24, fill="black")+
+  theme_light()+
+  ggtitle("Histograma de Proficiência em Matemática na Escala Saeb")+
+  xlab("Nota em Matemática")+
+  ylab("Frequência")
+#Medidas descritivas NOTA_MT
+saeb%>%
+  summarize(media=mean(NOTA_MT), q1=quantile(NOTA_MT, 0.25),
+            mediana=median(NOTA_MT), q3=quantile(NOTA_MT, 0.75), q4=max(NOTA_MT),
+            amplitude=max(NOTA_MT)-min(NOTA_MT), iiq=IQR(NOTA_MT), variancia=var(NOTA_MT),
+            dp=sd(NOTA_MT), cv=sd(NOTA_MT)/mean(NOTA_MT), Ap=3*(media-mediana)/dp,
+            Aq=((q3-mediana)-(mediana-q1))/iiq,
+            k=(q3-q1)/(2*(quantile(NOTA_MT, 0.9)-quantile(NOTA_MT, 0.1))))
+#Boxplot NOTA_MT
+ggplot(saeb, aes(NOTA_MT))+
+  geom_boxplot(outlier.shape=8)+
+  coord_flip()+
+  theme_light()+
+  theme(axis.ticks.x=element_blank(), axis.text.x=element_blank())+
+  ggtitle("Box Plot de Proficiência em Matemática na Escala Saeb")+
+  xlab("Nota em Matemática")
+```
+

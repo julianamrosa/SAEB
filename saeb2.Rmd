@@ -1,0 +1,394 @@
+---
+title: "Saeb 2"
+author: "Juliana Magalhães Rosa"
+date: "10/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Importando o arquivo de dados
+setwd("~/Me2/atividade_2")
+saeb <- read.csv("saeb.csv", encoding="UTF-8")
+```
+
+```{r}
+#Carregando bibliotecas
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+#Extraindo 50 amostras de tamanho 30
+set.seed(0)
+amostras_30 <- list()
+for (i in 1:50){
+  amostras_30[[i]] <- saeb[sample(2000, 30), ]
+}
+```
+
+```{r}
+#Extraindo 50 amostras de tamanho 100
+set.seed(100)
+amostras_100 <- list()
+for (i in 1:50){
+  amostras_100[[i]] <- saeb[sample(2000, 100), ]
+}
+```
+
+```{r}
+#Olhando para os parâmetros
+table(saeb$AREA)
+p_interior <- 1655/2000
+print(p_interior)
+
+table(saeb$SEXO)
+p_alunas <- 999/1942
+print(p_alunas)
+
+media_pt <- mean(saeb$NOTA_LP)
+dp_pt <- sd(saeb$NOTA_LP)
+print(media_pt)
+print(dp_pt)
+
+media_mat <- mean(saeb$NOTA_MT)
+dp_mat <- sd(saeb$NOTA_MT)
+print(media_mat)
+print(dp_mat)
+```
+
+```{r}
+#Calculando estimadores pontuais para as amostras de tamanho 30
+lista_p_interior_30 <- list()
+for (i in 1:50){
+  prop <- prop.table(table(amostras_30[[i]]$AREA))
+  lista_p_interior_30[[i]] <- prop[2]
+}
+
+lista_p_alunas_30 <- list()
+for (i in 1:50){
+  prop <- prop.table(table(amostras_30[[i]]$SEXO))
+  lista_p_alunas_30[[i]] <- prop[1]
+}
+
+lista_media_pt_30 <- list()
+for (i in 1:50){
+  lista_media_pt_30[[i]] <- mean(amostras_30[[i]]$NOTA_LP)
+}
+
+lista_media_mat_30 <- list()
+for (i in 1:50){
+  lista_media_mat_30[[i]] <- mean(amostras_30[[i]]$NOTA_MT)
+}
+```
+
+```{r}
+#Montando IC's para a proporção de alunos do interior nas amostras de tamanho 30
+z <- 1.96
+l_p_interior_30 <- list()
+for (i in 1:50){
+  l_p_interior_30[[i]] <- lista_p_interior_30[[i]] - z*sqrt(p_interior*(1-p_interior)/30)
+}
+u_p_interior_30 <- list()
+for (i in 1:50){
+  u_p_interior_30[[i]] <- lista_p_interior_30[[i]] + z*sqrt(p_interior*(1-p_interior)/30)
+}
+ic_p_interior_30 <- data.frame(prop=as.numeric(lista_p_interior_30), l=as.numeric(l_p_interior_30), 
+                               u=as.numeric(u_p_interior_30))
+ic_p_interior_30 <- ic_p_interior_30%>%
+  mutate(contem=ifelse(l<p_interior & u>p_interior, "Sim", "Não"))
+
+```
+
+```{r}
+#Montando IC's para a proporção de alunas nas amostras de tamanho 30
+l_p_alunas_30 <- list()
+for (i in 1:50){
+  l_p_alunas_30[[i]] <- lista_p_alunas_30[[i]] - z*sqrt(p_alunas*(1-p_alunas)/30)
+}
+u_p_alunas_30 <- list()
+for (i in 1:50){
+  u_p_alunas_30[[i]] <- lista_p_alunas_30[[i]] + z*sqrt(p_alunas*(1-p_alunas)/30)
+}
+ic_p_alunas_30 <- data.frame(prop=as.numeric(lista_p_alunas_30), l=as.numeric(l_p_alunas_30), 
+                               u=as.numeric(u_p_alunas_30))
+ic_p_alunas_30 <- ic_p_alunas_30%>%
+  mutate(contem=ifelse(l<p_alunas & u>p_alunas, "Sim", "Não"))
+```
+
+```{r}
+#Montando IC's para a média das notas de português nas amostras de tamanho 30
+l_media_pt_30 <- list()
+for (i in 1:50){
+  l_media_pt_30[[i]] <- lista_media_pt_30[[i]] - z*dp_pt/sqrt(30)
+}
+u_media_pt_30 <- list()
+for (i in 1:50){
+  u_media_pt_30[[i]] <- lista_media_pt_30[[i]] + z*dp_pt/sqrt(30)
+}
+ic_media_pt_30 <- data.frame(prop=as.numeric(lista_media_pt_30), l=as.numeric(l_media_pt_30), 
+                               u=as.numeric(u_media_pt_30))
+ic_media_pt_30 <- ic_media_pt_30%>%
+  mutate(contem=ifelse(l<media_pt & u>media_pt, "Sim", "Não"))
+```
+
+```{r}
+#Montando IC's para a média das notas de matemática nas amostras de tamanho 30
+l_media_mat_30 <- list()
+for (i in 1:50){
+  l_media_mat_30[[i]] <- lista_media_mat_30[[i]] - z*dp_mat/sqrt(30)
+}
+u_media_mat_30 <- list()
+for (i in 1:50){
+  u_media_mat_30[[i]] <- lista_media_mat_30[[i]] + z*dp_mat/sqrt(30)
+}
+ic_media_mat_30 <- data.frame(prop=as.numeric(lista_media_mat_30), l=as.numeric(l_media_mat_30), 
+                             u=as.numeric(u_media_mat_30))
+ic_media_mat_30 <- ic_media_mat_30%>%
+  mutate(contem=ifelse(l<media_mat & u>media_mat, "Sim", "Não"))
+```
+
+```{r}
+#Calculando estimadores pontuais para as amostras de tamanho 100
+lista_p_interior_100 <- list()
+for (i in 1:50){
+  prop <- prop.table(table(amostras_100[[i]]$AREA))
+  lista_p_interior_100[[i]] <- prop[2]
+}
+
+lista_p_alunas_100 <- list()
+for (i in 1:50){
+  prop <- prop.table(table(amostras_100[[i]]$SEXO))
+  lista_p_alunas_100[[i]] <- prop[1]
+}
+
+lista_media_pt_100 <- list()
+for (i in 1:50){
+  lista_media_pt_100[[i]] <- mean(amostras_100[[i]]$NOTA_LP)
+}
+
+lista_media_mat_100 <- list()
+for (i in 1:50){
+  lista_media_mat_100[[i]] <- mean(amostras_100[[i]]$NOTA_MT)
+}
+```
+
+```{r}
+#Montando IC's para a proporção de alunos do interior nas amostras de tamanho 100
+l_p_interior_100 <- list()
+for (i in 1:50){
+  l_p_interior_100[[i]] <- lista_p_interior_100[[i]] - z*sqrt(p_interior*(1-p_interior)/100)
+}
+u_p_interior_100 <- list()
+for (i in 1:50){
+  u_p_interior_100[[i]] <- lista_p_interior_100[[i]] + z*sqrt(p_interior*(1-p_interior)/100)
+}
+ic_p_interior_100 <- data.frame(prop=as.numeric(lista_p_interior_100), l=as.numeric(l_p_interior_100), 
+                               u=as.numeric(u_p_interior_100))
+ic_p_interior_100 <- ic_p_interior_100%>%
+  mutate(contem=ifelse(l<p_interior & u>p_interior, "Sim", "Não"))
+```
+
+```{r}
+#Montando IC's para a proporção de alunas nas amostras de tamanho 100
+l_p_alunas_100 <- list()
+for (i in 1:50){
+  l_p_alunas_100[[i]] <- lista_p_alunas_100[[i]] - z*sqrt(p_alunas*(1-p_alunas)/100)
+}
+u_p_alunas_100 <- list()
+for (i in 1:50){
+  u_p_alunas_100[[i]] <- lista_p_alunas_100[[i]] + z*sqrt(p_alunas*(1-p_alunas)/100)
+}
+ic_p_alunas_100 <- data.frame(prop=as.numeric(lista_p_alunas_100), l=as.numeric(l_p_alunas_100), 
+                             u=as.numeric(u_p_alunas_100))
+ic_p_alunas_100 <- ic_p_alunas_100%>%
+  mutate(contem=ifelse(l<p_alunas & u>p_alunas, "Sim", "Não"))
+```
+
+```{r}
+#Montando IC's para a média das notas de português nas amostras de tamanho 100
+l_media_pt_100 <- list()
+for (i in 1:50){
+  l_media_pt_100[[i]] <- lista_media_pt_100[[i]] - z*dp_pt/sqrt(100)
+}
+u_media_pt_100 <- list()
+for (i in 1:50){
+  u_media_pt_100[[i]] <- lista_media_pt_100[[i]] + z*dp_pt/sqrt(100)
+}
+ic_media_pt_100 <- data.frame(prop=as.numeric(lista_media_pt_100), l=as.numeric(l_media_pt_100), 
+                             u=as.numeric(u_media_pt_100))
+ic_media_pt_100 <- ic_media_pt_100%>%
+  mutate(contem=ifelse(l<media_pt & u>media_pt, "Sim", "Não"))
+```
+
+```{r}
+#Montando IC's para a média das notas de matemática nas amostras de tamanho 100
+l_media_mat_100 <- list()
+for (i in 1:50){
+  l_media_mat_100[[i]] <- lista_media_mat_100[[i]] - z*dp_mat/sqrt(100)
+}
+u_media_mat_100 <- list()
+for (i in 1:50){
+  u_media_mat_100[[i]] <- lista_media_mat_100[[i]] + z*dp_mat/sqrt(100)
+}
+ic_media_mat_100 <- data.frame(prop=as.numeric(lista_media_mat_100), l=as.numeric(l_media_mat_100), 
+                              u=as.numeric(u_media_mat_100))
+ic_media_mat_100 <- ic_media_mat_100%>%
+  mutate(contem=ifelse(l<media_mat & u>media_mat, "Sim", "Não"))
+```
+
+```{r}
+#Gráfico IC's para proporção de alunos no interior nas amostras de tamanho 30
+ic_p_interior_30_g <- data.frame(id = c(1:50, 1:50),
+                      limites = c(ic_p_interior_30$l, ic_p_interior_30$u),
+                      contem = c(ic_p_interior_30$contem, ic_p_interior_30$contem))
+ggplot(ic_p_interior_30_g, aes(limites, id, group = id, color = contem)) +
+  geom_point(size=2) +
+  geom_line() +
+  geom_vline(xintercept = p_interior, color='darkgray')+
+  theme_minimal()+
+  theme(axis.text.y=element_blank())+
+  ggtitle('Intervalos de Confiança de 95% para a Proporção de Alunos do Interior',
+          subtitle='Amostras de Tamanho 30')+
+  xlab('Intervalos de Confiança')+
+  ylab('Amostras')+
+  guides(color=guide_legend(reverse=TRUE))+
+  scale_color_manual(name="Contém Proporção Populacional", values=c('darkred', 'chartreuse4'))
+```
+
+```{r}
+#Gráfico IC's para proporção de alunas nas amostras de tamanho 30
+ic_p_alunas_30_g <- data.frame(id = c(1:50, 1:50),
+                                 limites = c(ic_p_alunas_30$l, ic_p_alunas_30$u),
+                                 contem = c(ic_p_alunas_30$contem, ic_p_alunas_30$contem))
+ggplot(ic_p_alunas_30_g, aes(limites, id, group = id, color = contem)) +
+  geom_point(size=2) +
+  geom_line() +
+  geom_vline(xintercept = p_alunas, color='darkgray')+
+  theme_minimal()+
+  theme(axis.text.y=element_blank())+
+  ggtitle('Intervalos de Confiança de 95% para a Proporção de Alunas',
+          subtitle='Amostras de Tamanho 30')+
+  xlab('Intervalos de Confiança')+
+  ylab('Amostras')+
+  guides(color=guide_legend(reverse=TRUE))+
+  scale_color_manual(name="Contém Proporção Populacional", values=c('darkred', 'chartreuse4'))
+```
+
+```{r}
+#Gráfico IC's para média das notas de português nas amostras de tamanho 30
+ic_media_pt_30_g <- data.frame(id = c(1:50, 1:50),
+                                 limites = c(ic_media_pt_30$l, ic_media_pt_30$u),
+                                 contem = c(ic_media_pt_30$contem, ic_media_pt_30$contem))
+ggplot(ic_media_pt_30_g, aes(limites, id, group = id, color = contem)) +
+  geom_point(size=2) +
+  geom_line() +
+  geom_vline(xintercept = media_pt, color='darkgray')+
+  theme_minimal()+
+  theme(axis.text.y=element_blank())+
+  ggtitle('Intervalos de Confiança de 95% para a Média das Notas em Língua Portuguesa',
+          subtitle='Amostras de Tamanho 30')+
+  xlab('Intervalos de Confiança')+
+  ylab('Amostras')+
+  guides(color=guide_legend(reverse=TRUE))+
+  scale_color_manual(name="Contém Média Populacional", values=c('chartreuse4'))
+```
+
+```{r}
+#Gráfico IC's para média das notas de matemática nas amostras de tamanho 30
+ic_media_mat_30_g <- data.frame(id = c(1:50, 1:50),
+                               limites = c(ic_media_mat_30$l, ic_media_mat_30$u),
+                               contem = c(ic_media_mat_30$contem, ic_media_mat_30$contem))
+ggplot(ic_media_mat_30_g, aes(limites, id, group = id, color = contem)) +
+  geom_point(size=2) +
+  geom_line() +
+  geom_vline(xintercept = media_mat, color='darkgray')+
+  theme_minimal()+
+  theme(axis.text.y=element_blank())+
+  ggtitle('Intervalos de Confiança de 95% para a Média das Notas em Matemática',
+          subtitle='Amostras de Tamanho 30')+
+  xlab('Intervalos de Confiança')+
+  ylab('Amostras')+
+  guides(color=guide_legend(reverse=TRUE))+
+  scale_color_manual(name="Contém Média Populacional", values=c('darkred', 'chartreuse4'))
+```
+
+```{r}
+#Gráfico IC's para proporção de alunos no interior nas amostras de tamanho 100
+ic_p_interior_100_g <- data.frame(id = c(1:50, 1:50),
+                                 limites = c(ic_p_interior_100$l, ic_p_interior_100$u),
+                                 contem = c(ic_p_interior_100$contem, ic_p_interior_100$contem))
+ggplot(ic_p_interior_100_g, aes(limites, id, group = id, color = contem)) +
+  geom_point(size=2) +
+  geom_line() +
+  geom_vline(xintercept = p_interior, color='darkgray')+
+  theme_minimal()+
+  theme(axis.text.y=element_blank())+
+  ggtitle('Intervalos de Confiança de 95% para a Proporção de Alunos do Interior',
+          subtitle='Amostras de Tamanho 100')+
+  xlab('Intervalos de Confiança')+
+  ylab('Amostras')+
+  guides(color=guide_legend(reverse=TRUE))+
+  scale_color_manual(name="Contém Proporção Populacional", values=c('darkred', 'chartreuse4'))
+```
+
+```{r}
+#Gráfico IC's para proporção de alunas nas amostras de tamanho 100
+ic_p_alunas_100_g <- data.frame(id = c(1:50, 1:50),
+                               limites = c(ic_p_alunas_100$l, ic_p_alunas_100$u),
+                               contem = c(ic_p_alunas_100$contem, ic_p_alunas_100$contem))
+ggplot(ic_p_alunas_100_g, aes(limites, id, group = id, color = contem)) +
+  geom_point(size=2) +
+  geom_line() +
+  geom_vline(xintercept = p_alunas, color='darkgray')+
+  theme_minimal()+
+  theme(axis.text.y=element_blank())+
+  ggtitle('Intervalos de Confiança de 95% para a Proporção de Alunas',
+          subtitle='Amostras de Tamanho 100')+
+  xlab('Intervalos de Confiança')+
+  ylab('Amostras')+
+  guides(color=guide_legend(reverse=TRUE))+
+  scale_color_manual(name="Contém Proporção Populacional", values=c('darkred', 'chartreuse4'))
+
+```
+
+```{r}
+#Gráfico IC's para média das notas de português nas amostras de tamanho 100
+ic_media_pt_100_g <- data.frame(id = c(1:50, 1:50),
+                               limites = c(ic_media_pt_100$l, ic_media_pt_100$u),
+                               contem = c(ic_media_pt_100$contem, ic_media_pt_100$contem))
+ggplot(ic_media_pt_100_g, aes(limites, id, group = id, color = contem)) +
+  geom_point(size=2) +
+  geom_line() +
+  geom_vline(xintercept = media_pt, color='darkgray')+
+  theme_minimal()+
+  theme(axis.text.y=element_blank())+
+  ggtitle('Intervalos de Confiança de 95% para a Média das Notas em Língua Portuguesa',
+          subtitle='Amostras de Tamanho 100')+
+  xlab('Intervalos de Confiança')+
+  ylab('Amostras')+
+  guides(color=guide_legend(reverse=TRUE))+
+  scale_color_manual(name="Contém Média Populacional", values=c('darkred', 'chartreuse4'))
+```
+
+```{r}
+#Gráfico IC's para média das notas de matemática nas amostras de tamanho 100
+ic_media_mat_100_g <- data.frame(id = c(1:50, 1:50),
+                                limites = c(ic_media_mat_100$l, ic_media_mat_100$u),
+                                contem = c(ic_media_mat_100$contem, ic_media_mat_100$contem))
+ggplot(ic_media_mat_100_g, aes(limites, id, group = id, color = contem)) +
+  geom_point(size=2) +
+  geom_line() +
+  geom_vline(xintercept = media_mat, color='darkgray')+
+  theme_minimal()+
+  theme(axis.text.y=element_blank())+
+  ggtitle('Intervalos de Confiança de 95% para a Média das Notas em Matemática',
+          subtitle='Amostras de Tamanho 100')+
+  xlab('Intervalos de Confiança')+
+  ylab('Amostras')+
+  guides(color=guide_legend(reverse=TRUE))+
+  scale_color_manual(name="Contém Média Populacional", values=c('darkred', 'chartreuse4'))
+```

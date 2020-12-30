@@ -1,0 +1,126 @@
+---
+title: "Saeb5"
+author: "Juliana Magalhães Rosa"
+date: "11/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Importando arquivo de dados
+setwd("~/Me2/atividade_7")
+saeb <- read.csv("saeb.csv", encoding="UTF-8")
+```
+
+```{r}
+#Carregando bibliotecas
+library(dplyr)
+library(ggplot2)
+library(stats)
+library(DescTools)
+```
+
+```{r}
+#Removendo valores faltantes de USO_TEMPO_TELAS
+saeb <-saeb%>%
+  filter(complete.cases(USO_TEMPO_TELAS))
+```
+
+```{r}
+#Colhendo amostra de tamanho 500
+set.seed(8087)
+amostra = saeb[sample(1946, 500), ]
+```
+
+```{r}
+#Ordenando REGIAO
+amostra$REGIAO <- factor(amostra$REGIAO, levels=c("Norte", "Nordeste", "Sudeste", "Sul", "Centro-Oeste"), ordered=TRUE)
+```
+
+
+```{r}
+#Gráfico REGIAO x NOTA_MT
+ggplot(amostra)+
+  geom_boxplot(aes(REGIAO, NOTA_MT, fill=REGIAO), show.legend=FALSE, outlier.shape=8)+
+  theme_minimal()+
+  ggtitle("Notas em Matemática por Região")+
+  xlab("Região")+
+  ylab("Notas em Matemática")+
+  scale_fill_manual(values=c("darkred", "darkorange2", "darkgoldenrod2", "chartreuse4", "darkblue"))
+```
+
+```{r}
+amostra%>%
+  group_by(REGIAO)%>%
+  summarize(media=mean(NOTA_MT), q1=quantile(NOTA_MT, 0.25),
+            mediana=median(NOTA_MT), q3=quantile(NOTA_MT, 0.75), q4=max(NOTA_MT),
+            amplitude=max(NOTA_MT)-min(NOTA_MT), iiq=IQR(NOTA_MT), variancia=var(NOTA_MT),
+            dp=sd(NOTA_MT), cv=sd(NOTA_MT)/mean(NOTA_MT))
+```
+
+```{r}
+#Testes para NOTA_MT por REGIAO
+bartlett.test(amostra$NOTA_MT~amostra$REGIAO)
+summary(aov(amostra$NOTA_MT~amostra$REGIAO))
+pairwise.t.test(amostra$NOTA_MT, amostra$REGIAO, p.adjust.method="bonferroni")
+LeveneTest(amostra$NOTA_MT, as.factor(amostra$REGIAO), center=mean)
+kruskal.test(amostra$NOTA_MT~amostra$REGIAO)
+pairwise.wilcox.test(amostra$NOTA_MT, amostra$REGIAO)
+```
+
+```{r}
+#Juntando 2 categorias de USO_TEMPO_TELAS
+tela_vetor <- amostra$USO_TEMPO_TELAS
+tela_lista <- list()
+for (i in 1:500){
+  tela_lista <- append(tela_lista, tela_vetor[i])
+}
+for (i in 1:500){
+  if (tela_lista[[i]]=="Não vejo TV, não navego na internet e não jogo jogos eletrônicos"){
+    tela_lista[i] <- "Menos de 1 hora"
+  }
+}
+tela_vetor <- as.character(tela_lista)
+amostra$USO_TEMPO_TELAS <- tela_vetor
+```
+
+```{r}
+#Ordenando categorias de USO_TEMPO_TELAS
+amostra$USO_TEMPO_TELAS <- factor(amostra$USO_TEMPO_TELAS, levels=c("Menos de 1 hora", 
+                                                                    "Entre 1 e 2 horas", 
+                                                                    "Mais de 2 horas, até 3 horas", 
+                                                                    "Mais de 3 horas"), ordered=TRUE)
+```
+
+```{r}
+#Gráfico USO_TEMPO_TELAS x NOTA_LP
+ggplot(amostra)+
+  geom_boxplot(aes(USO_TEMPO_TELAS, NOTA_LP, fill=USO_TEMPO_TELAS), show.legend=FALSE, outlier.shape=8)+
+  theme_minimal()+
+  ggtitle("Relação entre o Tempo em Frente a Telas e as Notas em Portguês")+
+  xlab("Tempo de Tela")+
+  ylab("Notas em Português")
+```
+
+```{r}
+#Medidas USO_TEMPO_TELAS x NOTA_LP
+amostra%>%
+  group_by(USO_TEMPO_TELAS)%>%
+  summarize(media=mean(NOTA_LP), q1=quantile(NOTA_LP, 0.25),
+            mediana=median(NOTA_LP), q3=quantile(NOTA_LP, 0.75), q4=max(NOTA_LP),
+            amplitude=max(NOTA_LP)-min(NOTA_LP), iiq=IQR(NOTA_LP), variancia=var(NOTA_LP),
+            dp=sd(NOTA_LP), cv=sd(NOTA_LP)/mean(NOTA_LP))
+```
+
+```{r}
+#Testes para NOTA_LP por USO_TEMPO_TELAS
+bartlett.test(amostra$NOTA_LP~amostra$USO_TEMPO_TELAS)
+summary(aov(amostra$NOTA_LP~amostra$USO_TEMPO_TELAS))
+pairwise.t.test(amostra$NOTA_LP, amostra$USO_TEMPO_TELAS, p.adjust.method="bonferroni")
+LeveneTest(amostra$NOTA_LP, as.factor(amostra$USO_TEMPO_TELAS), center=mean)
+kruskal.test(amostra$NOTA_LP~amostra$USO_TEMPO_TELAS)
+pairwise.wilcox.test(amostra$NOTA_LP, amostra$USO_TEMPO_TELAS)
+```

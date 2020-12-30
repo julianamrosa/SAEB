@@ -1,0 +1,141 @@
+---
+title: "Saeb 3"
+author: "Juliana Magalhães Rosa"
+date: "10/21/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Importando o arquivo de dados
+setwd("~/Me2/atividade_3")
+saeb <- read.csv("saeb.csv", encoding="UTF-8")
+```
+
+```{r}
+#Carregando bibliotecas
+library(ggplot2)
+library(EnvStats)
+library(nortest)
+```
+
+```{r}
+#Selecionando amostra de tamanho 30
+set.seed(0)
+amostras_30 <- list()
+for (i in 1:50){
+  amostras_30[[i]] <- saeb[sample(2000, 30), ]
+}
+set.seed(18012000)
+amostra_30 <- amostras_30[sample(50, 1)]
+amostra_30 <- amostra_30[[1]]
+```
+
+```{r}
+#Selecionando amostra de tamanho 100
+set.seed(100)
+amostras_100 <- list()
+for (i in 1:50){
+  amostras_100[[i]] <- saeb[sample(2000, 100), ]
+}
+set.seed(13041995)
+amostra_100 <- amostras_100[sample(50, 1)]
+amostra_100 <- amostra_100[[1]]
+```
+
+```{r}
+#Separando NOTA_LP em intervalos de classes (amostra de tamanho 100)
+k1=1+3.3*log10(100)
+k1
+h1=(max(amostra_100$NOTA_LP)-min(amostra_100$NOTA_LP))/k1
+h1
+amostra_100$notalp.cut = cut(amostra_100$NOTA_LP, 
+                             breaks=c(133, 165, 197, 229, 261, 293, 325, 357, 389))
+```
+
+```{r}
+#Tabela NOTA_LP (amostra de tamanho 100)
+with(amostra_100, table(notalp.cut))
+```
+
+```{r}
+#Histograma NOTA_LP (amostra de tamanho 100)
+ggplot(amostra_100, aes(NOTA_LP))+
+  geom_histogram(binwidth=32, fill="aquamarine4", aes(y=..density..))+
+  theme_light()+
+  ggtitle("Histograma de Proficiência em Língua Portuguesa na Escala Saeb", 
+          subtitle='Amostra de Tamanho 100')+
+  xlab("Nota em Língua Portuguesa")+
+  ylab("Frequência")+
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(amostra_100$NOTA_LP), sd = sd(amostra_100$NOTA_LP)))
+```
+
+```{r}
+#Teste qui-quadrado NOTA_LP (amostra de tamanho 100)
+pearson.test(amostra_100$NOTA_LP, n.classes=8)
+```
+
+```{r}
+#Separando NOTA_MT em intervalos de classes (amostra de tamanho 100)
+k1
+h2=(max(amostra_100$NOTA_MT)-min(amostra_100$NOTA_MT))/k1
+h2
+amostra_100$notamt.cut = cut(amostra_100$NOTA_MT, 
+                      breaks=c(136, 167, 198, 229, 260, 291, 322, 353, 384))
+```
+
+```{r}
+#Tabela NOTA_MT (amostra de tamanho 100)
+with(amostra_100, table(notamt.cut))
+```
+
+```{r}
+#Histograma NOTA_MT (amostra de tamanho 100)
+ggplot(amostra_100, aes(NOTA_MT))+
+  geom_histogram(binwidth=31, fill="aquamarine4", aes(y=..density..))+
+  theme_light()+
+  ggtitle("Histograma de Proficiência em Matemática na Escala Saeb",
+          subtitle='Amostra de Tamanho 100')+
+  xlab("Nota em Matemática")+
+  ylab("Frequência")+
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(amostra_100$NOTA_MT), sd = sd(amostra_100$NOTA_MT)))
+```
+
+```{r}
+#Teste qui-quadrado NOTA_MT (amostra de tamanho 100)
+pearson.test(amostra_100$NOTA_MT, n.classes=8)
+```
+
+```{r}
+#Testes para normalidade (amostra de tamanho 30- NOTA_LP)
+gofTest(amostra_30$NOTA_LP, test="lillie")
+gofTest(amostra_30$NOTA_LP, test="sw")
+gofTest(amostra_30$NOTA_LP, test="ad")
+```
+
+```{r}
+#Testes para normalidade (amostra de tamanho 100- NOTA_LP)
+gofTest(amostra_100$NOTA_LP, test="lillie")
+gofTest(amostra_100$NOTA_LP, test="sw")
+gofTest(amostra_100$NOTA_LP, test="ad")
+```
+
+```{r}
+#Testes para normalidade (amostra de tamanho 30- NOTA_MT)
+gofTest(amostra_30$NOTA_MT, test="lillie")
+gofTest(amostra_30$NOTA_MT, test="sw")
+gofTest(amostra_30$NOTA_MT, test="ad")
+```
+
+```{r}
+#Testes para normalidade (amostra de tamanho 100- NOTA_LP)
+gofTest(amostra_100$NOTA_MT, test="lillie")
+gofTest(amostra_100$NOTA_MT, test="sw")
+gofTest(amostra_100$NOTA_MT, test="ad")
+```
+
